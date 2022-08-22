@@ -37,7 +37,7 @@
 
     <script>
   for (let i = 0; i <= 299; i++) {
-  $(".grid").append('<div class="cell far" id="'+i+'">'+i+'</div>')
+  $(".grid").append('<div class="cell far" id="'+i+'"></div>')
 }
 
 const element = document.querySelector('.grid')
@@ -95,6 +95,8 @@ $(".cell").click(function(){
       console.log("source or dest already here!")
       //here we throw an alert saying you cant put blocker on the destination
     }else{
+      $(this).siblings().removeClass("path")  
+      $(this).removeClass("path") 
       if ($(this).hasClass("blocker")){
         $(this).removeClass("blocker")
       }else{
