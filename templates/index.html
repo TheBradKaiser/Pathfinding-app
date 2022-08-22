@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>My Website</title>
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="icon" href="./favicon.ico" type="image/x-icon" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  </head>
+  <body>
+    <main>
+    <h1>Pathfinder!</h1>
+      <h3>Type of Block</h3>
+      <input
+        type="radio"
+        id="blocker"
+        name="typeOfBlock"
+        value="blocker" checked="checked"
+      /><label for="blocker">Blocker</label><br />
+      <input type="radio" id="source" name="typeOfBlock" value="source" />
+      <label
+        for="source"
+        >Source</label
+      ><br />
+      <input type="radio" id="dest" name="typeOfBlock" value="dest" /><label
+        for="dest"
+        >Destination</label
+      ><br />
+      <button id="simulate">Simulate</button> <button id="reset">Reset</button>
+      <div class="container">
+        <div class="grid"></div>
+      </div>
+    </main>
+    <script src="index.js"></script>
+
+    <script>
+  for (let i = 0; i <= 299; i++) {
+  $(".grid").append('<div class="cell far" id="'+i+'">'+i+'</div>')
+}
+
+const element = document.querySelector('.grid')
+const gridInfo = getComputedStyle(element)
+
+const rowLength = gridInfo["grid-template-columns"].split(" ").length
+console.log(rowLength)
+
+const columnLength = gridInfo["grid-template-rows"].split(" ").length
+console.log(columnLength)
+
+$(".cell").mouseover(function(){
+  $(this).siblings().removeClass(["hover","next"])
+  $(this).removeClass(["hover","next"])
+  // console.log($(this).siblings())
+  // $(this).siblings().not($(this)).removeClass()
+  $(this).addClass("hover")
+
+
+  //top side logic
+  var thisId = $(this).attr('id')
+  if (thisId <rowLength){
+    top=false
+  }else{
+    $("#"+(thisId-rowLength)).addClass("next")
+  }
+  //bottom side logic
+
+  if ((thisId)>((rowLength*columnLength)-rowLength)){
+    bot=false
+  }else{
+    $("#"+( rowLength+parseInt(thisId) )).addClass("next")
+  }
+
+  //left side logic
+  if (thisId % rowLength == 0){
+
+    left=false
+  }else{
+    var prev = $(this).prev().addClass("next")
+  }
+  //right side logic
+  if ((parseInt(thisId)+1)%rowLength==0){
+    right=false
+  }else{
+    var next = $(this).next().addClass("next")
+  }
+
+})
+
+$(".cell").click(function(){
+
+  if ($("#blocker").is(":checked")){
+    if ($(this).hasClass("source") || $(this).hasClass("dest")){
+      console.log("source or dest already here!")
+      //here we throw an alert saying you cant put blocker on the destination
+    }else{
+      if ($(this).hasClass("blocker")){
+        $(this).removeClass("blocker")
+      }else{
+        $(this).addClass("blocker")
+      }
+
+}}else if ($("#source").is(":checked")){
+  if ($(this).hasClass("blocker") || $(this).hasClass("dest")){
+      console.log("blocker or dest already here!")
+      //here we throw an alert saying you cant put blocker on the destination
+  }else{
+  $(this).siblings().removeClass("path")  
+  $(this).removeClass("path") 
+  $(this).siblings().removeClass("source")
+  $(this).addClass("source")
+
+}}else if ($("#dest").is(":checked")){
+  if ($(this).hasClass("blocker") || $(this).hasClass("source")){
+      console.log("source or blocker already here!")
+      //here we throw an alert saying you cant put blocker on the destination
+  }else{
+  $(this).siblings().removeClass("path")  
+  $(this).removeClass("path") 
+  $(this).siblings().removeClass("dest")
+  $(this).addClass("dest")
+}}})
+
+$("#reset").click(function(){
+  $(".cell").removeClass("blocker")
+  $(".cell").removeClass("source")
+  $(".cell").removeClass("dest")
+  $(".cell").removeClass("path")
+})
+
+function nextBlocksGrabber(varId){
+  // const varId = $(cellObj).id
+  var nextBlocks=[]
+  var colNum=varId % rowLength
+  var rowNum=Math.floor(varId / rowLength)
+
+  if (rowNum != 0){
+    //top
+    nextBlocks.push($("#"+(varId-rowLength)).attr('id'))
+  }
+
+  if (rowNum < columnLength-1){
+    //bot
+    nextBlocks.push($("#"+(parseInt(varId)+rowLength)).attr('id'))
+  }
+  if (colNum != 0){
+    //left
+    nextBlocks.push($("#"+(parseInt(varId)-1)).attr('id'))
+  }
+  
+  if (colNum != rowLength-1){
+    //right
+    nextBlocks.push($("#"+(parseInt(varId)+1)).attr('id'))
+  }
+
+function NoBlockersAllowed(IdNumber){
+  return (!($("#"+IdNumber).hasClass("blocker")) && !($("#"+IdNumber).hasClass("path")))
+}
+  return nextBlocks.filter(NoBlockersAllowed)
+}
+
+function idToCoordinate(varId){
+  var colNum=varId % rowLength
+  var rowNum=Math.floor(varId / rowLength)
+  return {"x":colNum,"y":rowNum}
+}
+function coordinateToId(coords){
+  return (coords["y"]*30)+coords["x"]
+}
+
+
+// function pathFind(start,currentCoords,moveList,i){
+//     console.log(moveList.filter(e=>e.x===start.x && e.y===start.y).length)
+//     console.log(currentCoords)
+//     if (moveList.filter(e=>e.x===start.x && e.y===start.y).length>0){
+//         moveList.push({"x":currentCoords["x"],'y':currentCoords["y"],"c":i})
+//         console.log("start found!")
+//         console.log(moveList)
+//         return moveList
+        
+//     //end function
+//       }else{
+//     //we have the starting point and a value in our movelist dictionary, lets check the surrounding coordinates
+//     i+=1
+//     var nextCoords=nextBlocksGrabber(coordinateToId(currentCoords))
+//     // 
+
+//     for (let j = 0; j < nextCoords.length; j++){
+//     let idNum=nextCoords[j]
+
+//     var nextCoor = idToCoordinate(idNum)
+
+//     //gotta check to make sure the block isnt one we already grabbed.
+
+//     if (moveList.filter(e=>e.x===nextCoor["x"] && e.y===nextCoor["y"]).length==0){
+//       //if value == start, then we want to return the movelist.
+
+      
+
+//       moveList.push({"x":nextCoor["x"],'y':nextCoor["y"],"c":i})
+//       return pathFind(start,nextCoor,moveList,i)}
+//     }}}
+
+// //MAKE IT RECURSIVE!
+// function findShortestPathRecursive(start,end,moveList,finalMoveList){
+//   // console.log(start)
+//   // console.log(end)
+//   // console.log(moveList)
+//   // console.log(finalMoveList)
+//   var goodCoords = []
+//   //one: remove undefined from list of final moves. starts with start
+//   finalMoveList = finalMoveList.filter(function(e){
+//     return e != undefined;
+//   })
+
+
+//   if (finalMoveList.filter(e=>e.x===end.x && e.y===end.y).length>0){
+//     // console.log(finalMoveList)
+//     return finalMoveList
+//   } else {
+
+//     //two: find surrounding Ids of the start block
+//     var surroundingIds=nextBlocksGrabber(coordinateToId(start))
+//     // console.log(surroundingIds)
+//     //now that we have ids, lets map all of em to their coordinate
+//     surroundingIds.map(function(idNum){
+//       var coords = idToCoordinate(idNum)
+//       //next check to se if the coordinate is in the movelist. if it is, then log it and push it to the goodcoords list
+//       if (moveList.filter(e=>e.x===coords.x && e.y===coords.y).length>0){
+//         //GOTTA GET THE C VALUE IN HERE TOO!
+//         let tempVar = moveList.filter(e=>e.x===coords.x && e.y===coords.y)
+//         tempVar.forEach(function(currentValue){
+//           goodCoords.push(currentValue)
+//         })
+        
+//         goodCoords.push(tempVar)//here we found an item that was in the list, we add these to the list of good ids.
+//     }
+//   })
+//   var min=10000
+  
+//   // console.log(goodCoords)
+//   for (let j = 0; j < goodCoords.length; j++){
+//     var gc = goodCoords[j]
+//     // console.log(gc)
+//     // console.log(min)
+//     if (parseInt(gc.c)<min){
+//       // console.log(min)
+//       min=gc.c
+//       var minCoord=gc
+//     }
+//   }
+//   finalMoveList.push(minCoord)
+//   // console.log(minCoord)
+//   // console.log(finalMoveList)
+//   return findShortestPathRecursive(minCoord,end,moveList,finalMoveList)
+
+
+
+//   }
+// }
+
+// $("#1simulate").click(function(){
+
+//   //STEP 1: GET NEXT VALUES FROM THE SOURCE
+//   var nextBlockList = nextBlocksGrabber($(".source").attr('id'))
+//   const endCoords = idToCoordinate($(".dest").attr('id'))
+//   const startCoords = idToCoordinate($(".source").attr('id'))
+//   const xEnd=endCoords["x"]
+//   const yEnd=endCoords["y"]
+//   const xStart=startCoords["x"]
+//   const yStart=startCoords["y"]
+//   const startDict = {"x":xStart, "y":yStart}
+  
+//     const endDict = {"x":xEnd, "y":yEnd, "c":0}
+//   // console.log(startDict)
+//   // console.log(endDict)
+//   //start at the end, make a list of coordinate values with row,col,count
+//   var pathList=[endDict]
+//   // console.log(pathList)
+//   const resulty = pathFind(startDict,endDict,pathList,0)
+//   //this gives a list of a path to the destination, NOW WE MUST START FROM THE START AND FIND THE SHORTEST PATH!
+  
+  
+//   var newFinalMoveList=[startDict]
+//   newFinalMoveList.length = 1
+//   console.log(newFinalMoveList.length)
+//   console.log(newFinalMoveList)
+  
+
+
+//   var finalList = findShortestPathRecursive(startDict,endDict,resulty,newFinalMoveList)
+//   // console.log(finalList)
+//   finalList.splice(0,1)
+//   finalList.splice(finalList.length-1,1)
+//   console.log(finalList)
+//   finalList.map(function(finalitem){
+//     //list of coordinates to list of ids, then we can use those to change the color of the path.
+//     var finalId = coordinateToId(finalitem)
+//     $("#"+finalId).addClass("path")
+//   })
+
+// })
+
+
+
+function nextBlocksGrabber2(varId,usedQueue,queue){
+    // const varId = $(cellObj).id
+    var nextBlocks=[]
+    var colNum=varId % rowLength
+    var rowNum=Math.floor(varId / rowLength)
+    //filter out invalid blocks, like on the sides of the grid
+    if (rowNum != 0){
+      //top
+      nextBlocks.push($("#"+(varId-rowLength)).attr('id'))
+    }
+
+    if (rowNum < columnLength-1){
+      //bot
+      nextBlocks.push($("#"+(parseInt(varId)+rowLength)).attr('id'))
+    }
+    if (colNum != 0){
+      //left
+      nextBlocks.push($("#"+(parseInt(varId)-1)).attr('id'))
+    }
+    
+    if (colNum != rowLength-1){
+      //right
+      nextBlocks.push($("#"+(parseInt(varId)+1)).attr('id'))
+    }
+  //filter out blocks that are blockers
+  function NoBlockersAllowed(IdNumber){
+    return (!($("#"+IdNumber).hasClass("blocker")) && !($("#"+IdNumber).hasClass("path")))
+  }
+  //filter out blocks that are in the usedqueue
+  function NoUsedAllowed(IdNumber){
+    let coord = idToCoordinate(IdNumber)
+      return (usedQueue.filter(e=>e.x===idToCoordinate(IdNumber).x && e.y===idToCoordinate(IdNumber).y).length==0)
+  }
+  //filter out blocks that are in the current queue. 
+  function NoCurrentsAllowed(IdNumber){
+    let coord = idToCoordinate(IdNumber)
+      return (queue.filter(e=>e.x===idToCoordinate(IdNumber).x && e.y===idToCoordinate(IdNumber).y).length==0)
+  }
+
+  var filter1 = nextBlocks.filter(NoBlockersAllowed)
+  console.log("filter1")
+  console.log(filter1)
+  var filter2 = filter1.filter(NoUsedAllowed)
+  console.log("filter2")
+  console.log(filter2)
+  var filter3 = filter2.filter(NoCurrentsAllowed)
+  console.log("filter3")
+  console.log(filter3)
+    return filter3
+}
+//TODO: figure out a good way to make sure the code doesnt pick the same elements over and over.
+
+
+
+
+
+$("#simulate").click(function(){
+  //get list of blockers
+  var listOfBlockers=[]
+  $('.blocker').each(function(){
+    listOfBlockers.push($(this).attr('id'))
+  })
+  // console.log(listOfBlockers)
+  const listOfBlockerCoords = listOfBlockers.map(idToCoordinate)
+  // console.log(listOfBlockerCoords)
+
+  //get start and end coordinates
+  const startId = $(".source").attr('id')
+  const startCoordinates=idToCoordinate(startId)
+  // console.log(startCoordinates)
+
+  const endId = $(".dest").attr('id')
+  const endCoordinates=idToCoordinate(endId)
+  // console.log(endCoordinates)
+
+  //start at start, make a queue, add it to queue, pop it, use the value to determine the values of other legal points
+  var queue = []
+  var usedQueue=[]
+  queue.push(startCoordinates)
+  var goFlag = true
+  var i = 0
+  //starting at start coordinates
+  // while (i<=10000) {
+  while (goFlag == true && i < 10000) {
+    //take first item from queue
+  //pop the current value off the queue
+    var currentVal = queue.shift()
+    //add a counter to the value.
+    currentVal["c"]=i
+      console.log(currentVal)
+    //throw item into the used queue
+    usedQueue.push(currentVal)
+    //get the next blocks IDs and coordinates
+    var nextBlocksIds = nextBlocksGrabber2(coordinateToId(currentVal),usedQueue,queue)
+    console.log("nextBlocksIds")
+    console.log(nextBlocksIds)
+    console.log("Current queue")
+    console.log(queue)
+    // console.log(nextBlocksIds)
+    var nextBlocksCoords = nextBlocksIds.map(idToCoordinate)
+    console.log(nextBlocksCoords)
+    //get the next blocks coordinates and put em on the queue
+    nextBlocksCoords.forEach(function(block){
+      if (usedQueue.filter(e=>e.x===block.x && e.y===block.y).length>0){
+        console.log("already taken")
+      }else{
+      queue.push(block)}
+    })
+    console.log(nextBlocksCoords)
+    console.log(endCoordinates)
+    console.log(nextBlocksCoords.filter(e=>e.x===endCoordinates.x && e.y===endCoordinates.y).length)
+    //if we find the end coordinates in the nextBlocksCoords then we found the end and we can stop. 
+    if (nextBlocksCoords.filter(e=>e.x===endCoordinates.x && e.y===endCoordinates.y).length>0){
+      // console.log("found")
+      goFlag = false
+      // console.log(usedQueue)
+    }
+    i+=1
+  }
+  //we have a list of the stuff, see if we can get the minimum value from the thing?
+  var goFlag2 = true
+  currentVal = endCoordinates
+  var finalPathObj=[]
+  while (goFlag2 == true){
+    //iterate through list of visited blocks and find the minimum value
+    var nextUsedValues=[]
+    var nextBs = nextBlocksGrabber(coordinateToId(currentVal))
+    var nextBsCoords=[]
+    // console.log(nextBs)
+    nextBs.forEach(function(Bs){
+      var nextBCoords=idToCoordinate(Bs)
+      console.log(nextBCoords)
+      nextBsCoords.push(nextBCoords)
+      // console.log(nextBsCoords)
+      // console.log(usedQueue.filter(e=>e.x===nextBCoords.x && e.y===nextBCoords.y))
+      if (usedQueue.filter(e=>e.x===nextBCoords.x && e.y===nextBCoords.y).length>0){
+        nextUsedValues.push(usedQueue.filter(e=>e.x===nextBCoords.x && e.y===nextBCoords.y))
+        // console.log(usedQueue.filter(e=>e.x===nextBCoords.x && e.y===nextBCoords.y))
+      }
+
+    
+    })
+    var flatnextUsedValues= nextUsedValues.flat()
+    // console.log(flatnextUsedValues)
+    var min = Math.min(...flatnextUsedValues.map(item => item.c))
+    // console.log(min)
+    var minItem= flatnextUsedValues.filter(e=>e.c == min)[0]
+    // console.log(minItem)
+    finalPathObj.push(coordinateToId(minItem))
+    currentVal = minItem
+    if (currentVal == startCoordinates){
+    goFlag2=false}
+  }
+  finalPathObj.pop(finalPathObj.length-1 )
+  console.log(finalPathObj)
+  finalPathObj.map(function(e){
+    $("#"+e).addClass("path")
+  })
+
+
+})
+    </script>
+  </body>
+</html>
