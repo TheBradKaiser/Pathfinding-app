@@ -1,2 +1,2 @@
 # Pathfinding-app
-a simple app that finds the shortest path between two points.
+a simple javascript app that finds the shortest path between two points, with some stylish css too!
