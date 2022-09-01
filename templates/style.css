@@ -1,14 +1,48 @@
+:root {
+  --bgColor: violet;
+}
+
+
+h1{
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 27px;
+  letter-spacing: 5px;
+  word-spacing: 4.2px;
+  color: #000000;
+  font-weight: 700;
+  text-decoration: none solid rgb(68, 68, 68);
+  font-style: normal;
+  font-variant: small-caps;
+  text-transform: none;
+  
+}
+.filter-switch label {
+  cursor: pointer;
+}
+.filter-switch-item input:checked + label {
+  /* color: inherit; */
+}
+.filter-switch-item input:not(:checked) + label {
+  --bg-opacity: 0;
+  box-shadow: none;
+}
+
 .container {
     background: black;
     display: inline-block;
     border: 3px solid black;
+    -webkit-box-shadow: 9px 9px 10px 0px rgba(0,0,0,0.39); 
+    box-shadow: 9px 9px 10px 0px rgba(0,0,0,0.39);
+    max-width: none;
+    max-height: none;
   }
   .grid {
     display: grid;
     grid-template-columns: repeat(30, 50px);
     grid-template-rows: repeat(10, 50px);
     grid-gap: 3spx;
-    
+    max-width: none;
+    max-height: none;
   }
   .cell {
      /* center the cell content */
@@ -26,17 +60,9 @@
     padding: 10px;
     border: 1px solid black;
   }
-  .cell.hover {
-    background: violet;
-  }
+
   .cell.next{
     background:aqua;
-  }
-  .far{
-    background: aliceblue;
-  }
-  .cell.blocker{
-    background: blue
   }
   .cell.source{
     background: green
@@ -48,6 +74,23 @@
     background: lightgreen
   }
 
+  .far{
+    background: aliceblue;
+  }
+  .cell.blocker{
+    background: blue
+  }
+  .cell.hover {
+    background: var(--bgColor)
+  }
+
+  
+  .myButton {
+    color: rgb(255, 255, 255); font-size: 15px; line-height: 15px; padding: 9px; border-radius: 29px; font-family: Verdana, Geneva, sans-serif; font-weight: 700; text-decoration: none solid rgb(68, 68, 68); font-style: normal; font-variant: small-caps; text-transform: none; background-image: linear-gradient(to right, rgb(28, 110, 164) 0%, rgb(35, 136, 203) 0%, rgb(20, 78, 117) 100%); box-shadow: rgba(0, 0, 0, 0.39) 9px 9px 10px 0px; border: 6px solid rgb(28, 110, 164); display: inline-block;}
+    .myButton:hover {
+    background: #1C6EA4; }
+    .myButton:active {
+    background: #144E75; }
   /* .clicker { 
     -moz-transition: all .2s ease-in;
     -o-transition: all .2s ease-in;
