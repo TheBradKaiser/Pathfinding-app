@@ -1,5 +1,7 @@
 :root {
   --bgColor: violet;
+  --gridHeight: 10;
+  --gridLength: 30;
 }
 #speedRange{
   -webkit-transform: rotateY(180deg);
@@ -14,13 +16,13 @@
     overflow: hidden;
     width: 80px;
     -webkit-appearance: none;
-    background-color: #be0000;
+    background-color: #fd7272;
   }
   
   input[type='range']::-webkit-slider-runnable-track {
     height: 10px;
     -webkit-appearance: none;
-    color: #00d440;
+    color: #64e68b;
     margin-top: -1px;
   }
   
@@ -30,13 +32,17 @@
     height: 10px;
     cursor: ew-resize;
     background: #000000;
-    box-shadow: -80px 0 0 80px #00c230;
+    box-shadow: -80px 0 0 80px #64e68b;
   }
 
 }
 
+#grad {
+  background-image: linear-gradient(to bottom right, lightblue, white);
+}
+
 .vl {
-  border-left: 6px solid rgb(247, 20, 20);
+  border-left: 6px solid  #fd7272;
   height: 500px;
 }
 
@@ -65,18 +71,17 @@ h1{
 }
 
 .container {
-    background: black;
+    /* background: black;
     display: inline-block;
-    border: 3px solid black;
-    -webkit-box-shadow: 9px 9px 10px 0px rgba(0,0,0,0.39); 
-    box-shadow: 9px 9px 10px 0px rgba(0,0,0,0.39);
+    /* border: 3px solid black; */
+
     max-width: none;
     max-height: none;
   }
   .grid {
     display: grid;
-    grid-template-columns: repeat(30, 50px);
-    grid-template-rows: repeat(10, 50px);
+    grid-template-columns: repeat(var(--gridLength), 50px);
+    grid-template-rows: repeat(var(--gridHeight), 50px);
     grid-gap: 3spx;
     max-width: none;
     max-height: none;
@@ -96,27 +101,45 @@ h1{
     transition: all .2s ease-in;
     padding: 10px;
     border: 1px solid black;
+    -webkit-box-shadow: 9px 9px 10px 0px rgba(0,0,0,0.39); 
+    box-shadow: 9px 9px 10px 0px rgba(0,0,0,0.39);
   }
 
   .cell.next{
-    background:aqua;
+    background:rgb(128, 193, 214);
   }
   .cell.source{
-    background: green
+    height: 50px;
+  width: 50px;
+  background-color: #64e68b;
+  border-radius: 50%;
+  display: inline-block;
   }
+
   .cell.dest{
-    background: red
+    background-color:  #fd7272;
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+    display: inline-block;
+    
   }
   .cell.path{
-    background: lightgreen
+    background: rgb(199, 255, 199)
   }
 
   .far{
     background: aliceblue;
   }
   .cell.blocker{
-    background: blue
+
+    background-color: rgb(61, 61, 255);
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+    display: inline-block;
   }
+
   .cell.hover {
     background: var(--bgColor)
   }
